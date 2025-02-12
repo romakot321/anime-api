@@ -59,6 +59,7 @@ async def lifespan(app):
 def init_web_application():
     project_settings = ProjectSettings()
     application = FastAPI(
+        title="Anime API",
         openapi_url='/openapi.json',
         docs_url='/docs',
         redoc_url='/redoc',

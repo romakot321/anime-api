@@ -8,7 +8,12 @@ from app.schemas.task import TaskVideoCreateSchema, TaskImageCreateSchema, TaskS
 router = APIRouter(prefix="/api/task", tags=["Animate task"])
 
 
-@router.post("/image", response_model=TaskSchema, dependencies=[Depends(validate_api_token)])
+@router.post(
+    "/image",
+    response_model=TaskSchema,
+    dependencies=[Depends(validate_api_token)],
+    description="Создание задачи на генерацию аниме-изображения, исходя из предпочтений пользователя(prompt). model_id - необязательное, брать из списка моделей"
+)
 async def generate_image(
         schema: TaskImageCreateSchema,
         background_tasks: BackgroundTasks,
@@ -19,7 +24,12 @@ async def generate_image(
     return model
 
 
-@router.post("/video", response_model=TaskSchema, dependencies=[Depends(validate_api_token)])
+@router.post(
+    "/video",
+    response_model=TaskSchema,
+    dependencies=[Depends(validate_api_token)],
+    description="Создание задачи на генерацию видео. model_id - необязательное, брать из списка моделей"
+)
 async def generate_video(
         schema: TaskVideoCreateSchema,
         background_tasks: BackgroundTasks,
@@ -31,7 +41,12 @@ async def generate_video(
     return model
 
 
-@router.get("/{task_id}", response_model=TaskSchema, dependencies=[Depends(validate_api_token)])
+@router.get(
+    "/{task_id}",
+    response_model=TaskSchema,
+    dependencies=[Depends(validate_api_token)],
+    description="Получение статуса и ссылки на результат генерации"
+)
 async def get_task_status(
         task_id: UUID,
         service: TaskService = Depends()
