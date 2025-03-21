@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import Depends
 
 from app.repositories.prompt import PromptRepository
@@ -17,4 +18,7 @@ class ModelsService:
             ModelSchema.model_validate(prompt)
             for prompt in prompts
         ]
+
+    async def get_image(self, model_id: UUID) -> bytes:
+        return await self.prompt_repository.get_image(model_id)
 

@@ -3,7 +3,7 @@ import uuid
 from uuid import UUID
 from enum import Enum, auto
 
-from sqlalchemy import bindparam
+from sqlalchemy import LargeBinary, bindparam
 from sqlalchemy import CheckConstraint
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
@@ -75,6 +75,7 @@ class Prompt(BaseMixin, Base):
     is_model: M[bool]
     for_image: M[bool]
     for_video: M[bool]
+    image: M[bytes | None] = column(type_=LargeBinary, nullable=True)
 
 
 class TaskImage(BaseMixin, Base):

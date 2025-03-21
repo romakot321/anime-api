@@ -31,6 +31,10 @@ class PromptRepository[Table: Prompt, int](BaseRepository):
     async def delete(self, model_id: UUID):
         await self._delete(model_id)
 
+    async def get_image(self, model_id: UUID) -> bytes | None:
+        query = select(Prompt.image).filter_by(id=model_id)
+        return await self.session.scalar(query)
+
     async def get_video_basic(self) -> Prompt:
         query = select(Prompt).filter_by(is_model=False, for_image=False, for_video=True).limit(1)
         model = await self.session.scalar(query)

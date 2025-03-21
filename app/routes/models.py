@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
+from uuid import UUID
 
 from app.routes import validate_api_token
 from app.schemas.models import ModelSearchSchema, ModelSchema
@@ -18,3 +19,11 @@ async def list_models(
 ):
     return await service.list(schema)
 
+
+@router.get(
+    "/{model_id}/image",
+    response_class=Response
+)
+async def get_model_image(model_id: UUID, service: ModelsService = Depends()):
+    image = await service.get_image(model_id)
+    return Response(content=image, media_type="image/png")
