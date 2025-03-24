@@ -1,6 +1,7 @@
 from typing import BinaryIO
 from aiohttp import ClientSession
 import os
+import io
 from uuid import uuid4
 
 from loguru import logger
@@ -28,6 +29,22 @@ class ExternalRepository:
                     "app_bundle": self.app_bundle,
                     "image_size": "portrait_4_3"
                 }
+            )
+            assert resp.status == 201, await resp.text()
+            return (await resp.json())["id"]
+
+    async def start_image2image_generate(self, prompt: str, image_body: io.BytesIO) -> str:
+        """Return task_id"""
+        async with ClientSession(base_url=self.image_api_url, headers={"ACCESS-TOKEN": self.image_api_token}) as session:
+            resp = await session.post(
+                "/image/improve",
+                params={
+                    "prompt": prompt,
+                    "user_id": self.user_id,
+                    "app_bundle": self.app_bundle,
+                    "image_size": "portrait_4_3"
+                },
+                data={"file": image_body}
             )
             assert resp.status == 201, await resp.text()
             return (await resp.json())["id"]

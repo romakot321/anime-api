@@ -1,3 +1,4 @@
+import io
 from typing import BinaryIO
 from uuid import UUID
 from fastapi import Depends, HTTPException, UploadFile
@@ -67,6 +68,22 @@ class TaskService:
         external_id = await self.external_repository.start_video_generate(prompt.text, task.images[0].external_id)
         await self.task_repository.create_items(
             TaskItem(task_id=task_id, external_id=external_id, result_url=self.external_repository.make_video_url(external_id))
+        )
+
+    async def start_image_to_image(self, task_id: UUID, image_body: bytes, schema: TaskImageCreateSchema):
+        task = await self.task_repository.get(task_id)
+
+        if schema.model_id is not None:
+            prompt_model = await self.prompt_repository.get(schema.model_id)
+        else:
+            prompt_model = await self.prompt_repository.get_image_basic()
+        prompt_text = prompt_model.text + schema.prompt
+        image = io.BytesIO(image_body)
+        image.name = "a.jpg"
+
+        external_id = await self.external_repository.start_image2image_generate(prompt_text, image)
+        await self.task_repository.create_items(
+            TaskItem(task_id=task_id, external_id=external_id, result_url=None)
         )
 
     async def start_image(self, task_id: UUID, schema: TaskImageCreateSchema):

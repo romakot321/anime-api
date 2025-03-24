@@ -25,6 +25,23 @@ async def generate_image(
 
 
 @router.post(
+    "/image2image",
+    response_model=TaskSchema,
+    dependencies=[Depends(validate_api_token)],
+    description="Создание задачи на генерацию аниме-изображения, исходя из предпочтений пользователя(prompt+immage). model_id - необязательное, брать из списка моделей"
+)
+async def generate_image_from_image(
+        background_tasks: BackgroundTasks,
+        file: UploadFile = File(),
+        schema: TaskImageCreateSchema = Depends(),
+        service: TaskService = Depends()
+):
+    model = await service.create_image(schema)
+    background_tasks.add_task(service.start_image_to_image, model.id, await file.read(), schema)
+    return model
+
+
+@router.post(
     "/video",
     response_model=TaskSchema,
     dependencies=[Depends(validate_api_token)],
