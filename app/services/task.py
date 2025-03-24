@@ -81,7 +81,7 @@ class TaskService:
         image = io.BytesIO(image_body)
         image.name = "a.jpg"
 
-        external_id = await self.external_repository.start_image2image_generate(prompt_text, image)
+        external_id = await self.external_repository.start_image2image_generate(prompt_text, image, schema.aspect_ratio.value)
         await self.task_repository.create_items(
             TaskItem(task_id=task_id, external_id=external_id, result_url=None)
         )
@@ -95,7 +95,7 @@ class TaskService:
             prompt_model = await self.prompt_repository.get_image_basic()
         prompt_text = prompt_model.text + schema.prompt
 
-        external_id = await self.external_repository.start_image_generate(prompt_text)
+        external_id = await self.external_repository.start_image_generate(prompt_text, schema.aspect_ratio.value)
         await self.task_repository.create_items(
             TaskItem(task_id=task_id, external_id=external_id, result_url=None)
         )

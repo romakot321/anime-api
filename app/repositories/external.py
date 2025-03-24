@@ -18,7 +18,7 @@ class ExternalRepository:
     user_id: str = str(uuid4())
     app_bundle: str = "animeapi"
 
-    async def start_image_generate(self, prompt: str) -> str:
+    async def start_image_generate(self, prompt: str, image_size: str) -> str:
         """Return task_id"""
         async with ClientSession(base_url=self.image_api_url, headers={"ACCESS-TOKEN": self.image_api_token}) as session:
             resp = await session.post(
@@ -27,13 +27,13 @@ class ExternalRepository:
                     "prompt": prompt,
                     "user_id": self.user_id,
                     "app_bundle": self.app_bundle,
-                    "image_size": "portrait_4_3"
+                    "image_size": image_size
                 }
             )
             assert resp.status == 201, await resp.text()
             return (await resp.json())["id"]
 
-    async def start_image2image_generate(self, prompt: str, image_body: io.BytesIO) -> str:
+    async def start_image2image_generate(self, prompt: str, image_body: io.BytesIO, image_size; str) -> str:
         """Return task_id"""
         async with ClientSession(base_url=self.image_api_url, headers={"ACCESS-TOKEN": self.image_api_token}) as session:
             resp = await session.post(
@@ -42,7 +42,7 @@ class ExternalRepository:
                     "prompt": prompt,
                     "user_id": self.user_id,
                     "app_bundle": self.app_bundle,
-                    "image_size": "portrait_4_3"
+                    "image_size": image_size
                 },
                 data={"file": image_body}
             )
